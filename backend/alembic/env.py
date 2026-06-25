@@ -7,8 +7,6 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from app.db.database import Base
-
 load_dotenv()
 
 DATABASE_URL_SYNC = os.getenv("DATABASE_URL").replace(
@@ -25,6 +23,9 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
+from app.db.base import Base
+from app.models import *
+
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata

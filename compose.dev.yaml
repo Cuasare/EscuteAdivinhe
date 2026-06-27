@@ -19,7 +19,7 @@ services:
     build: backend/.
     restart: always
     env_file:
-      - .env
+      - backend/.env
     depends_on:
       - db
     volumes:

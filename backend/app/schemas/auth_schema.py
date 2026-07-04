@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class CallBackResponse(BaseModel):
-    code: str | None = None
+class SpotifyCallbackQuery(BaseModel):
     error: str | None = None
+    code: str
     state: str

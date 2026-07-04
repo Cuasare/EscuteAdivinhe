@@ -18,6 +18,8 @@ services:
     container_name: backend-dev
     build: backend/.
     restart: always
+    ports:
+      - "8000:8000"
     env_file:
       - backend/.env
     depends_on:

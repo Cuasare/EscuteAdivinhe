@@ -110,6 +110,7 @@ async def callback(
         user_id=user.id,
         user_token=refresh_token,
         spotify_token=response_json["refresh_token"],
+        spotify_access_token=response_json["access_token"],
         spotify_expires_at=datetime.now(timezone.utc) + timedelta(seconds=response_json["expires_in"]),
         expires_at=datetime.now(timezone.utc) + timedelta(minutes=settings.JWT_EXPIRE_MINUTES),
         is_revoked=False,
@@ -124,3 +125,37 @@ async def callback(
         refresh_token=refresh_token,
         max_age_rt=settings.REFRESH_TOKEN_EXPIRE_MINUTES
     )
+async def refresh_spotify_token(
+        refresh_token: RefreshToken,
+        db: AsyncSession,
+) -> str:
+    credentials = f"{settings.SPOTIFY_CLIENT_ID}:{settings.SPOTIFY_CLIENT_SECRET}"
+    encoded = base64.b64encode(credentials.encode()).decode()
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            "https://accounts.spotify.com/api/token",
+            headers={
+                "Authorization": f"Basic {encoded}",
+                "Content-type": "application/x-www-form-urlencoded"
+            },
+            data={
+                "grant_type": "refresh_token",
+                "refresh_token": refresh_token.spotify_token,
+            },
+        )
+
+    if response.status_code != 200:
+        raise HTTPException(400, "Falha ao renovar token do spotify!")
+
+    response_json = response.json()
+
+    refresh_token.spotify_access_token = response_json["access_token"]
+    refresh_token.spotify_expires_at = (datetime.now(timezone.utc) + timedelta(seconds=response_json["expires_in"]))
+
+    if "refresh_token" in response_json:
+        refresh_token.spotify_token = response_json["refresh_token"]
+
+    await db.commit()
+
+    return response_json["access_token"]

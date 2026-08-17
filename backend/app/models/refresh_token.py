@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 if TYPE_CHECKING:
-    from app.models.user import User
+    from app.models.User import User
 
 class RefreshToken(Base):
     __tablename__ = "refresh_token"
@@ -15,6 +15,7 @@ class RefreshToken(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     user_token: Mapped[str] = mapped_column(Text)
     spotify_token: Mapped[str] = mapped_column(Text)
+    spotify_access_token: Mapped[str | None] = mapped_column(Text, nullable=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     spotify_expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     is_revoked: Mapped[bool] = mapped_column(Boolean, default=False)

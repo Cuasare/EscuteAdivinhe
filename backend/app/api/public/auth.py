@@ -4,7 +4,9 @@ from fastapi import APIRouter, Depends, Response
 from fastapi.params import Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.dependencies import get_current_user
 from app.db.database import get_async_session
+from app.models import User
 from app.schemas.auth_schema import SpotifyCallbackQuery
 from app.services import auth_service
 

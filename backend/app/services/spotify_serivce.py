@@ -1,3 +1,5 @@
+from urllib import response
+
 import httpx
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -46,5 +48,24 @@ async def get_user_playlists(
 
     if response.status_code != 200:
         raise HTTPException(400, "Falha ao buscar playlists do spotify")
+
+    return response.json()["items"]
+
+async def get_playlist_items(
+        id: str,
+        refresh_token: RefreshToken,
+        db: AsyncSession,
+) -> list[dict]:
+    request_url = f"https://api.spotify.com/v1/playlists/{id}/items"
+
+    response = await _spotify_request(
+        "GET",
+        request_url,
+        refresh_token,
+        db
+    )
+
+    if response.status_code != 200:
+        raise HTTPException(400, "Falha ao buscar itens da playlist")
 
     return response.json()["items"]

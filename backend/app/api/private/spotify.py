@@ -14,3 +14,11 @@ async def get_user_playlists(
         db: AsyncSession = Depends(get_async_session),
 ):
     return await spotify_serivce.get_user_playlists(refresh_token, db)
+
+@router.get("/playlist/{id}")
+async def get_playlist_items(
+        id: str,
+        refresh_tokehn: RefreshToken = Depends(get_active_refresh_token),
+        db: AsyncSession = Depends(get_async_session),
+):
+    return await spotify_serivce.get_playlist_items(id, refresh_tokehn, db)
